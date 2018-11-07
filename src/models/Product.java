@@ -1,5 +1,9 @@
 package models;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
+import org.codehaus.jackson.map.annotate.JsonDeserialize;
+import org.codehaus.jackson.map.annotate.JsonSerialize;
+
 import java.time.LocalDate;
 
 public class Product {
@@ -10,26 +14,30 @@ public class Product {
     private String name;
     private float price;
     private Types type;
-    private LocalDate date;
+    @JsonSerialize(using = serialization.dateSerializer.JsonLocalDateSerializer.class)
+    @JsonDeserialize(using = serialization.dateSerializer.JsonLocalDateDeserializer.class)
+    private LocalDate manufactureDate;
     private String barcode;
-    private LocalDate termin;
+    @JsonSerialize(using = serialization.dateSerializer.JsonLocalDateSerializer.class)
+    @JsonDeserialize(using = serialization.dateSerializer.JsonLocalDateDeserializer.class)
+    private LocalDate expirationDate;
 
     public Product() {
         name = null;
         price = 0;
         type = null;
-        date = null;
+        manufactureDate  = null;
         barcode = null;
-        termin = null;
+        expirationDate = null;
     }
 
-    public Product(String name, float price, Types type, LocalDate date, String barcode, LocalDate termin) {
+    public Product(String name, float price, Types type, LocalDate manufactureDate, String barcode, LocalDate expirationDate) {
         this.name = name;
         this.price = price;
         this.type = type;
-        this.date = date;
+        this.manufactureDate = manufactureDate;
         this.barcode = barcode;
-        this.termin = termin;
+        this.expirationDate = expirationDate;
     }
 
     public void setName(String name) {
@@ -48,20 +56,20 @@ public class Product {
         return this.price;
     }
 
-    public void setType(String type) {
-        this.type = Types.valueOf(type);
+    public void setType(Types type) {
+        this.type = type;
     }
 
     public Types getType() {
         return this.type;
     }
 
-    public void setDate(LocalDate date) {
-        this.date = date;
+    public void setManufactureDate(LocalDate manufactureDate) {
+        this.manufactureDate = manufactureDate;
     }
 
-    public LocalDate getDate() {
-        return this.date;
+    public LocalDate getManufactureDate() {
+        return this.manufactureDate;
     }
 
     public void setBarcode(String barcode) {
@@ -72,16 +80,17 @@ public class Product {
         return this.barcode;
     }
 
-    public void setTermin(LocalDate termin) {
-        this.termin = termin;
+    public void setExpirationDate(LocalDate expirationDate) {
+        this.expirationDate = expirationDate;
     }
 
-    public LocalDate getTermin() {
-        return this.termin;
+    public LocalDate getExpirationDate() {
+        return this.expirationDate;
     }
 
+    @JsonIgnore
     public boolean isOverdue() {
-        return LocalDate.now().compareTo(termin) > 0;
+        return LocalDate.now().compareTo(expirationDate) > 0;
     }
 
     @Override
@@ -89,9 +98,9 @@ public class Product {
         return "Name: " + name + ".\n" +
                 "Price: " + price + ".\n" +
                 "Type: " + type + ".\n" +
-                "Date: " + date + ".\n" +
+                "Date: " + manufactureDate + ".\n" +
                 "Barcode: " + barcode + ".\n" +
-                "Termin: " + termin + ".\n";
+                "Termin: " + expirationDate + ".\n";
     }
 
     @Override
@@ -99,10 +108,10 @@ public class Product {
         final int prime = 31;
         int result = 1;
         result = prime * result + ((barcode == null) ? 0 : barcode.hashCode());
-        result = prime * result + ((date == null) ? 0 : date.hashCode());
+        result = prime * result + ((manufactureDate == null) ? 0 : manufactureDate.hashCode());
         result = prime * result + ((name == null) ? 0 : name.hashCode());
         result = prime * result + Float.floatToIntBits(price);
-        result = prime * result + ((termin == null) ? 0 : termin.hashCode());
+        result = prime * result + ((expirationDate == null) ? 0 : expirationDate.hashCode());
         result = prime * result + ((type == null) ? 0 : type.hashCode());
         return result;
     }
@@ -113,9 +122,9 @@ public class Product {
         if(!name.equals(product.getName())) return false;
         if(price != product.getPrice()) return false;
         if(type != product.getType()) return false;
-        if(!date.equals(product.getDate())) return false;
+        if(!manufactureDate.equals(product.getManufactureDate())) return false;
         if(!barcode.equals(product.getBarcode())) return false;
-        if(!termin.equals(product.getTermin())) return false;
+        if(!expirationDate.equals(product.getExpirationDate())) return false;
         return true;
     }
 }
